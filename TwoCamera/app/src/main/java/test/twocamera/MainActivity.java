@@ -305,7 +305,14 @@ public class MainActivity extends Activity implements View.OnClickListener {
            ivColorSelect.setVisibility(View.VISIBLE);
 
 
+
        }
-    
-    
+
+    public  void setDraweMode(int i) {
+
+if (customView!=null)
+        customView.setMode(i);
+    }
+
+
 }

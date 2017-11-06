@@ -5,6 +5,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -44,6 +46,13 @@ public class CustomView extends View {
     
     Context context ;
 
+    int mode = DrawWitch.draw_line ;
+    private Paint mEraserPaint;
+
+    public void setMode(int mode) {
+        this.mode = mode;
+    }
+
     public CustomView(Context context) {
         super(context);
        this. context = context ;
@@ -75,16 +84,29 @@ public class CustomView extends View {
 //        
 //        drawLine(canvas);
 //        
-        drawRubber(canvas);
+       switch (mode){
 
-        drawPath(canvas);
+           case  DrawWitch.draw_line:
+
+               paint.setColor(Color.BLUE);
+               paint.setStyle(Paint.Style.STROKE);
+               paint.setStrokeWidth(5);
+               paint.setAntiAlias(true);
+
+               drawPath(canvas);
+               break;
+           case  DrawWitch.draw_rubber :
+
+               drawRubber(canvas);
+
+
+               break;
+       }
+
     }
 
     private void drawPath(Canvas canvas) {
-        paint.setColor(Color.BLUE);
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(5);
-        paint.setAntiAlias(true);
+
 
         if (mPsList.size() > 0) {
             for (int i = 0; i < mPsList.size(); i++) {
@@ -100,17 +122,19 @@ public class CustomView extends View {
 
     }
 
+
     private void drawRubber(Canvas canvas) {
 
 
-        Paint paint = new Paint();
 
-        paint.setColor(Color.WHITE);
 
         paint.setStrokeWidth(30);
-
         paint.setAntiAlias(true);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
+//        paint.setStrokeJoin(Paint.Join.ROUND);
 
+            drawPath(canvas);
 // 
 //        
 //        if (xS.size() > 0)
@@ -193,12 +217,15 @@ public class CustomView extends View {
     private void init() {
 
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mEraserPaint = new Paint();
     }
 
     List<Path> mPsList = new ArrayList<>();
     List<Path> mCachPS = new ArrayList<>();
 
     boolean isLastExcute = false;
+
+    boolean isScroll  =false;
 
     public boolean onTouchEvent(MotionEvent event) {
         int x;
@@ -207,9 +234,9 @@ public class CustomView extends View {
         switch (event.getAction()) {
 
             case MotionEvent.ACTION_DOWN:
+                isScroll  =false;
 
-
-                if (System.currentTimeMillis() - lastTimeMillis < 200 && lastTimeMillis != 0) {
+                if (System.currentTimeMillis() - lastTimeMillis < 300 && lastTimeMillis != 0) {
 
                     //显示 工具图标
 
@@ -261,15 +288,16 @@ public class CustomView extends View {
                     mX = x;
                     mY = y;
                 }
-
+                isScroll  =true;
                 postInvalidate();
                 break;
 
             case MotionEvent.ACTION_UP:
 
+                if (isScroll)
                 mPsList.add(mPath);
                 
-                if(System.currentTimeMillis() -lastTimeMillis < 80){
+                if(System.currentTimeMillis() -lastTimeMillis < 100){
 
                     ((MainActivity)context).hideInstruentView();
                 }

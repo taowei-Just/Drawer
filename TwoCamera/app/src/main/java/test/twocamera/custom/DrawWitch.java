@@ -13,7 +13,8 @@ public class DrawWitch {
     public static final  int draw_color = draw_cycle+1;
     public static final  int draw_rect = draw_color+1;
     public static final  int draw_rect_F = draw_rect+1;
- 
+    public static final  int draw_rubber = draw_rect_F+1;
+
     
     
     
