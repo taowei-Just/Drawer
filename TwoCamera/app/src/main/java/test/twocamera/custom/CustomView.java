@@ -208,13 +208,19 @@ public class CustomView extends View {
 
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
+        initBitmap();
+        sectionFaild = createPaint(5, Color.BLUE);
+    }
+
+    private void initBitmap() {
+
+
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
         int widthPixels = displayMetrics.widthPixels;
         int heightPixels = displayMetrics.heightPixels;
 
         bitmap = Bitmap.createBitmap(widthPixels, heightPixels, Bitmap.Config.ARGB_8888);
         mBmCanvas = new Canvas(bitmap);
-        sectionFaild = createPaint(5, Color.BLUE);
     }
 
     List<Path> mPsList = new ArrayList<>();
@@ -285,10 +291,19 @@ public class CustomView extends View {
 
 
                 draweSameThing();
+                
                 break;
 
             case MotionEvent.ACTION_UP:
 
+
+                x = (int) event.getX();
+                y = (int) event.getY();
+
+                mPath.lineTo(x,y);
+                
+                draweSameThing();
+                
                 if (isScroll) {
                     if (sectionFaild.getPaths() == null) {
                         ArrayList<Path> paths = new ArrayList<>();
@@ -304,7 +319,6 @@ public class CustomView extends View {
                 }
 
                 if (System.currentTimeMillis() - lastTimeMillis < 100) {
-
                     ((MainActivity) context).hideInstruentView();
                 }
                 break;
@@ -315,25 +329,15 @@ public class CustomView extends View {
     private void draweSameThing() {
 
         //绘制历史线条
-        if (sectionFailds != null && sectionFailds.size() > 0)
-            for (ViewSectionFaild sectionFaild : sectionFailds) {
-
-                if (sectionFaild != null && sectionFaild.getPaths() != null)
-                    
-                    for (Path path : sectionFaild.getPaths()) {
-                        mBmCanvas.drawPath(path, sectionFaild.getPaint());
-                    }
-            }
+        
 
         // 绘制当前线条
-        
+
         switch (mode) {
 
             case DrawWitch.draw_line:
 
-                
                 mBmCanvas.drawPath(mPath, sectionFaild.getPaint());
-
                 break;
             case DrawWitch.draw_rubber:
 
@@ -345,30 +349,62 @@ public class CustomView extends View {
         super.invalidate();
     }
 
+    private void drawHistory() {
+        if (sectionFailds != null && sectionFailds.size() > 0)
+            for (ViewSectionFaild sectionFaild : sectionFailds) {
+                
+                if (sectionFaild != null && sectionFaild.getPaths()!= null)
+                    
+                    for (Path path : sectionFaild.getPaths()) {
+                        mBmCanvas.drawPath(path, sectionFaild.getPaint());
+                        
+                    }
+            }
+    }
+
     // 上一个
 
     public void lastLine() {
-        LogUtil.e(TAG ,"撤销" ,false);
+        LogUtil.e(TAG, "撤销", false);
 
         isLastExcute = true;
 
         if (sectionFailds != null && sectionFailds.size() > 0) {
+            
             if (cachSectionFailds == null)
                 cachSectionFailds = new ArrayList<>();
             
-            ViewSectionFaild sectionFaild = sectionFailds.get(sectionFailds.size() - 1);
-            
-            cachSectionFailds.add(sectionFaild);
-            sectionFailds.remove(sectionFaild);
+            for (int i = sectionFailds.size()-1;i>=0; i--) {
+                ViewSectionFaild sectionFaild = sectionFailds.get(i);
+
+                ArrayList<Path> paths = sectionFaild.getPaths();
+                
+                if (paths != null && paths.size() > 0) {
+                    
+                    paths.remove(paths.size() - 1);
+                    
+                    break;
+                    
+                } else {
+                    
+                    sectionFailds.remove(sectionFaild);
+                    
+                }
+
+            }
+
         }
-       invalidate();
+
+        initBitmap();
+        drawHistory();
+        invalidate();
     }
 
 
     // 下一个
 
     public void recoverLine() {
-        LogUtil.e(TAG ,"恢复" ,false);
+        LogUtil.e(TAG, "恢复", false);
 
         if (cachSectionFailds != null && cachSectionFailds.size() > 0) {
             ViewSectionFaild sectionFaild = cachSectionFailds.get(cachSectionFailds.size() - 1);
@@ -379,8 +415,8 @@ public class CustomView extends View {
     }
 
     public void clear() {
-        
-        LogUtil.e(TAG ,"清理 " +sectionFailds.toString() ,false);
+
+        LogUtil.e(TAG, "清理 " + sectionFailds.toString(), false);
         isLastExcute = true;
         if (sectionFailds != null && sectionFailds.size() > 0) {
             // 留一次反悔的机会
@@ -388,14 +424,14 @@ public class CustomView extends View {
             sectionFailds = new ArrayList<>();
         }
 
-        mPath =new Path();
-      invalidate();
+        mPath = new Path();
+        invalidate();
     }
 
 
     @Override
     public void invalidate() {
-        draweSameThing();
+ 
         super.invalidate();
     }
 }
