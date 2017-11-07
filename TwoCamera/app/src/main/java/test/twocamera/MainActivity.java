@@ -17,6 +17,7 @@ import android.widget.Toast;
 import java.io.IOException;
 
 import test.twocamera.custom.CustomView;
+import test.twocamera.custom.TEST_View;
 import test.twocamera.fragment.BottomColorSlectFragment;
 
 public class MainActivity extends Activity implements View.OnClickListener {
@@ -35,6 +36,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     public static String BOTTOM_FRAGMENT_TAG = "BottomColorSlectFragment";
     private BottomColorSlectFragment bottomColorSlectFragment;
     private ImageView ivClear;
+    private TEST_View ttv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +96,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
 //        });
 
         customView = findViewById(R.id.cv_draw_view);
+        ttv = findViewById(R.id.Tev_draw_view);
+       
         ivRevover = findViewById(R.id.iv_revover);
         ivRevication = findViewById(R.id.iv_revication_);
         iv_more = findViewById(R.id.iv_more_function);
@@ -226,10 +230,13 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 // 上一步
 
                 customView.lastLine();
+        
+                
                 break;
 
             case R.id.iv_revication_:
                 customView.recoverLine();
+                
                 break;
             
             case R.id.iv_clear_:
@@ -297,15 +304,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
     }
        public void showInstruentView() {
 
-
            ivClear.setVisibility(View.VISIBLE);
            iv_more.setVisibility(View.VISIBLE);
            ivRevication.setVisibility(View.VISIBLE);
            ivRevover.setVisibility(View.VISIBLE);
            ivColorSelect.setVisibility(View.VISIBLE);
-
-
-
+ 
        }
 
     public  void setDraweMode(int i) {

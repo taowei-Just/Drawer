@@ -89,7 +89,7 @@ public class BottomColorSlectFragment extends Fragment {
 
                 }else {
 
-                    activity.setDraweMode(DrawWitch.draw_line);
+                                    activity.setDraweMode(DrawWitch.draw_line);
 
                 }
             }
