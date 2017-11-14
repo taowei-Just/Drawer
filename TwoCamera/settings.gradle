@@ -1,1 +1,1 @@
-include ':app', ':gloable'
+include ':app', ':gloable', ':sharedmodle'

@@ -4,7 +4,12 @@ import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.Service;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.hardware.Camera;
+import android.net.Uri;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -14,11 +19,20 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.tencent.bugly.Bugly;
+import com.tencent.bugly.crashreport.CrashReport;
+
+import java.io.File;
 import java.io.IOException;
 
+import huanyang.gloable.gloable.Shared;
+import huanyang.gloable.gloable.utils.SharedUtlis;
 import test.twocamera.custom.CustomView;
+import test.twocamera.custom.DrawHelper;
+import test.twocamera.custom.DrawWitch;
 import test.twocamera.custom.TEST_View;
 import test.twocamera.fragment.BottomColorSlectFragment;
+import test.twocamera.fragment.TopMoreFragment;
 
 public class MainActivity extends Activity implements View.OnClickListener {
 
@@ -34,16 +48,40 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private ImageView ivColorSelect;
 
     public static String BOTTOM_FRAGMENT_TAG = "BottomColorSlectFragment";
+    public static String TOP_MORE_FRAGMENT_TAG = "TopMoreFragment";
+    public static String MIRROR_FRAGMENT_TAG = "MirrorFragment";
+
     private BottomColorSlectFragment bottomColorSlectFragment;
     private ImageView ivClear;
     private TEST_View ttv;
+    private DrawHelper mDrawHelper;
+    private SharedUtlis mSharedUtlis;
+    private TopMoreFragment mTopMoreFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        CrashReport.initCrashReport(getApplicationContext(), "aa8e48ed6b", true);
 
         init();
+        initdata();
+
+    }
+
+    public SharedUtlis getSharedUtlis() {
+        return mSharedUtlis;
+    }
+
+    private void initdata() {
+
+        mDrawHelper = new DrawHelper(this, customView);
+
+        mSharedUtlis = new SharedUtlis(getApplicationContext(), Shared.config);
+
+        mDrawHelper.setLineWidth((int) (mSharedUtlis.getInt(Shared.LineWidthKey, 30) * 1.5));
+        mDrawHelper.setRubberWidth((mSharedUtlis.getInt(Shared.RubberWidthKey, 30) * 2));
+        mDrawHelper.setMode(DrawWitch.draw_line);
 
     }
 
@@ -97,7 +135,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
         customView = findViewById(R.id.cv_draw_view);
         ttv = findViewById(R.id.Tev_draw_view);
-       
+
         ivRevover = findViewById(R.id.iv_revover);
         ivRevication = findViewById(R.id.iv_revication_);
         iv_more = findViewById(R.id.iv_more_function);
@@ -230,32 +268,70 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 // 上一步
 
                 customView.lastLine();
-        
-                
+
+
                 break;
 
             case R.id.iv_revication_:
                 customView.recoverLine();
-                
+
                 break;
-            
+
             case R.id.iv_clear_:
                 customView.clear();
                 break;
 
             case R.id.iv_more_function:
-                Toast.makeText(MainActivity.this, "更多功能敬请期待！", Toast.LENGTH_SHORT).show();
-//                hideColorFragment();
+
+
+                if (isMoreShow) {
+                    hideMoreFragment();
+                } else {
+                    showMoreFragment();
+                }
                 break;
 
             case R.id.iv_coror_select:
 
-//                Toast.makeText(MainActivity.this,"更多功能敬请期待！",Toast.LENGTH_SHORT).show();
 
                 showColorFragment();
 
+
                 break;
         }
+    }
+
+
+    boolean isMoreShow = false;
+
+    private void showMoreFragment() {
+
+        isMoreShow = true;
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        if (mTopMoreFragment == null) {
+            mTopMoreFragment = new TopMoreFragment();
+        }
+        fragmentTransaction.replace(R.id.fl_top_more, mTopMoreFragment, TOP_MORE_FRAGMENT_TAG);
+        fragmentTransaction.commit();
+
+        iv_more.setImageResource(R.mipmap.up);
+    }
+
+    public void hideMoreFragment() {
+
+        isMoreShow = false;
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        if (mTopMoreFragment != null) {
+            fragmentTransaction.remove(mTopMoreFragment);
+        }
+        fragmentTransaction.commit();
+        mTopMoreFragment = null;
+
+        iv_more.setImageResource(R.mipmap.function);
     }
 
     private void showColorFragment() {
@@ -288,35 +364,41 @@ public class MainActivity extends Activity implements View.OnClickListener {
         fragmentTransaction.commit();
         bottomColorSlectFragment = null;
         ivColorSelect.setVisibility(View.VISIBLE);
-
     }
 
     public void hideInstruentView() {
-
 
         ivClear.setVisibility(View.INVISIBLE);
         iv_more.setVisibility(View.INVISIBLE);
         ivRevication.setVisibility(View.INVISIBLE);
         ivRevover.setVisibility(View.INVISIBLE);
         ivColorSelect.setVisibility(View.INVISIBLE);
-   
+        
+        hideMoreFragment();
 
     }
-       public void showInstruentView() {
 
-           ivClear.setVisibility(View.VISIBLE);
-           iv_more.setVisibility(View.VISIBLE);
-           ivRevication.setVisibility(View.VISIBLE);
-           ivRevover.setVisibility(View.VISIBLE);
-           ivColorSelect.setVisibility(View.VISIBLE);
+
+    public void showInstruentView() {
+
+        ivClear.setVisibility(View.VISIBLE);
+        iv_more.setVisibility(View.VISIBLE);
+        ivRevication.setVisibility(View.VISIBLE);
+        ivRevover.setVisibility(View.VISIBLE);
+        ivColorSelect.setVisibility(View.VISIBLE);
+
+    }
+
+    public void setDraweMode(int i) {
+
+
+        if (mDrawHelper != null)
+            mDrawHelper.setMode(i);
+    }
+
+    public DrawHelper getDrawHelper() {
+        return mDrawHelper;
+    }
  
-       }
-
-    public  void setDraweMode(int i) {
-
-if (customView!=null)
-        customView.setMode(i);
-    }
-
 
 }

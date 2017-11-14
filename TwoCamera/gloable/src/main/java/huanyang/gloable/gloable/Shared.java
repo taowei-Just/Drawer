@@ -25,4 +25,13 @@ public class Shared {
 
 
     public static String idKey = " idKey";
+    
+    
+    public static String RubberWidthKey = "RubberWidthKey";
+    public static String LineWidthKey = "LineWidthKey";
+    public static String LineColorKey = "LineColorKey";
+
+
+    public static String isRubberKey = "isRubberKey";
+    public static String isLineKey = "isLineKey";
 }

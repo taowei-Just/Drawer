@@ -103,5 +103,31 @@
 
 
     </FrameLayout>
+    
+    <FrameLayout
+        android:id="@+id/fl_top_more"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/iv_more_function"
+         
+        android:layout_alignParentEnd="true"
+       
+        android:padding="10dp"
+        
+        >
+        
+        
+        
+    </FrameLayout>
+    
+    <FrameLayout
+        android:id="@+id/fl_main_full"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        
+        >
+        
+        
+    </FrameLayout>
 
 </RelativeLayout>

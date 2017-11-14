@@ -10,8 +10,6 @@ package huanyang.gloable.gloable.utils;
 import android.os.Environment;
 import android.util.Log;
 
- 
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
@@ -96,7 +94,7 @@ public class LogUtil {
     	if (isOpen) Log.e(tag, msg);
     	
     	if(isSave)
-    	saveLogToFile(Environment.getExternalStorageDirectory().toString()+"/"+AppInfo.packageName+"/Log/"+ tag+"/Log_E.txt", msg);
+    	saveLogToFile(Environment.getExternalStorageDirectory().toString()+"/"+ AppInfo.packageName+"/Log/"+ tag+"/Log_E.txt", msg);
     }
 
     public static void e(String tag, int msg) {
